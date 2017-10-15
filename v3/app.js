@@ -17,7 +17,7 @@ app.get("/", function(req,res){
     res.render("landing");
 });
 
-//generate the seeding data
+//seeding the database
 seedDB();
 
 //INDEX ROUTE
