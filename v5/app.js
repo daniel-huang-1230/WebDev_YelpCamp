@@ -10,16 +10,20 @@ var express     = require("express"),
 //CONFIG
 mongoose.connect("mongodb://localhost/yelp_camp");
 app.use(bodyParser.urlencoded({extended:true}));
-
+//tell express to serve the public directory
+app.use(express.static(__dirname+"/public"));
 app.set("view engine", "ejs");
+//generate the seeding data
+seedDB();
 
+
+//LANDING PAGE
 app.get("/", function(req,res){
     
     res.render("landing");
 });
 
-//generate the seeding data
-seedDB();
+
 
 //INDEX ROUTE
 app.get("/campgrounds", function(req, res){
