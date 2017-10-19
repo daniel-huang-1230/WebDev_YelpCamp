@@ -133,6 +133,36 @@ app.post("/campgrounds/:id/comments", function(req, res){
         }
     });
 });
+
+//AUTH ROUTES
+
+//show the Register form
+app.get("/register", function(req,res){
+    res.render("register");
+});
+
+//handle sign up logic
+app.post("/register", function(req,res){
+    var newUser = new User({username: req.body.username});
+    //notice here we DO NOT pass in the "password" into the new uer object
+    //rather, we pass it in as another parameter and passport-local-mongoose will 
+    //"HASH" the password for us
+    User.register(newUser, req.body.password, function(err,user){
+        if(err){
+            console.log(err);
+            return res.render("register"); //short-circuit and show again the register form
+        }
+        passport.authenticate("local")(req,res, function(){
+            res.redirect("/campgrounds"); //log the user in
+        });
+    } );
+});
+
+//show login form
+app.get("/login", function(req,res){
+    
+});
+
 app.listen(process.env.PORT, process.env.IP, function(){
 
     console.log("The Yelp Camp server has started！");
