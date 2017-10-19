@@ -62,6 +62,34 @@ router.get("/:id", function(req, res){
     
 });
 
+//EDIT ROUTE
+router.get("/:id/edit", function(req,res){
+    Campground.findById(req.params.id, function(err,foundCampground){
+        if(err){
+            res.redirect("/campgrounds");
+        }else{
+            //pass in the campground that we wanna edit (found by its own ID)
+             res.render("campgrounds/edit", {campground: foundCampground});
+        }
+    });
+   
+});
+
+
+//UPDATE ROUT
+router.put("/:id", function(req, res){
+    //find and update the correct campground
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
+        if(err){
+            res.redirect("/campgrounds");
+        }else{
+            //redirect to somewhere (show page)
+            res.redirect("/campgrounds/"+ req.params.id);
+        }
+    });
+    
+});
+
 //define our own middleware to check if the user is logged in (only so he/she can add new comment)
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){

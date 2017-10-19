@@ -6,6 +6,7 @@ var express         = require("express"),
     LocalStrategy   = require("passport-local"),
     Campground      = require("./models/campground"),
     seedDB          = require("./seeds"),
+    MethodOverride  = require("method-override"),
     User            = require("./models/user"),
     Comment         = require("./models/comment");
     
@@ -20,6 +21,7 @@ mongoose.connect("mongodb://localhost/yelp_camp");
 app.use(bodyParser.urlencoded({extended:true}));
 //tell express to serve the public directory
 app.use(express.static(__dirname+"/public"));
+app.use(MethodOverride("_method"));
 app.set("view engine", "ejs");
 
 //generate the seeding data
