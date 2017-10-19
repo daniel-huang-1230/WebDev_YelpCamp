@@ -27,10 +27,18 @@ app.use(require("express-session")({
     saveUninitialized: false
 }));
 app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));  //User.authenticate() is implemented for us by passport-local-mongoose
+app.use(passport.session());  
+//User.authenticate() is implemented for us by passport-local-mongoose
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+//another middleware that we created
+//pass req.user to EVERY TEMPLATE
+app.use(function(req,res,next){
+    res.locals.currentUser = req.user;  //res.locals is whatever we have in our current template
+    next();    //IMPORTANT!! we need this line to move on to the next step (callback in most of our cases)
+});
 
 
 //LANDING PAGE
@@ -47,8 +55,9 @@ app.get("/campgrounds", function(req, res){
     Campground.find({},function(err,allCampgrounds){
         if(err){
             console.log(err);
-        }else{
-            res.render("campgrounds/index", {campgrounds:allCampgrounds});
+        }else{                             //notice the currentUser part is required for every route, we didn't have to add it mamually since we 
+                                            // have handled on the top --i.e. app.use(function(req,res,next))  req.locals......
+            res.render("campgrounds/index", {campgrounds:allCampgrounds, currentUser:req.user});
         }
     });
   
@@ -99,20 +108,21 @@ app.get("/campgrounds/:id", function(req, res){
 //  COMMENTS ROUTES
 //=====================
 
-//NEW ROUTE
-app.get("/campgrounds/:id/comments/new", function(req,res){
-    Campground.findById(req.params.id,function(err,campground){
+//NEW ROUTE   
+//note how we pass the MIDDLEWARE we've defined--isLoggedIn    
+app.get("/campgrounds/:id/comments/new", isLoggedIn, function(req, res){
+    // find campground by id
+    Campground.findById(req.params.id, function(err, campground){
         if(err){
             console.log(err);
-        }else{
-            res.render("comments/new", {campground:campground}); //pass in the data campground to our template
+        } else {
+             res.render("comments/new", {campground: campground}); //pass in the data campground to our template
         }
-    });
-    
+    })
 });
 
 //CREATE ROUTE
-app.post("/campgrounds/:id/comments", function(req, res){
+app.post("/campgrounds/:id/comments", isLoggedIn, function(req, res){
     //look up campground using ID
     Campground.findById(req.params.id,function(err,campground){
         if(err){
@@ -169,7 +179,8 @@ app.get("/login", function(req,res){
 //i.e. app.post("/login", middleware, callback)
 app.post("/login", passport.authenticate("local",
     {   successRedirect:"/campgrounds",
-        failureRedirect: "/login"}), function(req,res){
+        failureRedirect: "/login"
+    }), function(req,res){
       //don't really have to do anything in the callback after the middleware is run
 });
 
@@ -178,6 +189,16 @@ app.get("/logout", function(req,res){
     req.logout();  //this is the method that comes with the awesome passport package
     res.redirect("/campgrounds");
 });
+
+//define our own middleware to check if the user is logged in (only so he/she can add new comment)
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    //else if the user is not logged in, redirect back to the login page
+    res.redirect("/login");
+}
+
 app.listen(process.env.PORT, process.env.IP, function(){
 
     console.log("The Yelp Camp server has started！");
