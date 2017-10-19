@@ -1,7 +1,7 @@
 var express     = require("express");
 var Campground  = require("../models/campground");
 var Comment  = require("../models/comment");
-var router      = express.Router();
+var router      = express.Router({mergeParams: true}); //important to mergeParams so that our findById works as expected
 
 //INDEX ROUTE
 router.get("/", function(req, res){
@@ -28,7 +28,11 @@ router.post("/", isLoggedIn, function(req, res){
     var name = req.body.name;
     var image = req.body.image;
     var des = req.body.description;
-    var newCampground = {name:name, image:image, description:des};
+    var author = {
+      id: req.user._id,
+      username: req.user.username
+    };
+    var newCampground = {name:name, image:image, description:des, author: author};
     
     //add the newly created campground to the database
     Campground.create(newCampground, function(err, newlyCreated){
