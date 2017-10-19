@@ -19,6 +19,7 @@ app.set("view engine", "ejs");
 //generate the seeding data
 seedDB();
 
+
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({
     secret: "Daniel for the W",
@@ -160,9 +161,23 @@ app.post("/register", function(req,res){
 
 //show login form
 app.get("/login", function(req,res){
-    
+    res.render("login");
 });
 
+//handle login logic
+//notice the second argument here is what's called the "middleware"
+//i.e. app.post("/login", middleware, callback)
+app.post("/login", passport.authenticate("local",
+    {   successRedirect:"/campgrounds",
+        failureRedirect: "/login"}), function(req,res){
+      //don't really have to do anything in the callback after the middleware is run
+});
+
+//lastly, logout route
+app.get("/logout", function(req,res){
+    req.logout();  //this is the method that comes with the awesome passport package
+    res.redirect("/campgrounds");
+});
 app.listen(process.env.PORT, process.env.IP, function(){
 
     console.log("The Yelp Camp server has started！");
