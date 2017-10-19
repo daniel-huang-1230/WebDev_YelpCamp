@@ -63,20 +63,21 @@ router.get("/:id", function(req, res){
 });
 
 //EDIT ROUTE
-router.get("/:id/edit", function(req,res){
+router.get("/:id/edit", checkCampgroundOwnership, function(req,res){
     Campground.findById(req.params.id, function(err,foundCampground){
         if(err){
-            res.redirect("/campgrounds");
+             res.redirect("/campgrounds");
         }else{
+            //DON'T USE == or === because these two ids are of DIFFERENT TYPES!!!
             //pass in the campground that we wanna edit (found by its own ID)
-             res.render("campgrounds/edit", {campground: foundCampground});
+            res.render("campgrounds/edit", {campground: foundCampground});
         }
     });
    
 });
 
 
-//UPDATE ROUT
+//UPDATE ROUTE
 router.put("/:id", function(req, res){
     //find and update the correct campground
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
@@ -90,6 +91,17 @@ router.put("/:id", function(req, res){
     
 });
 
+//DESTROY ROUTE
+router.delete("/:id", function(req, res){
+    Campground.findByIdAndRemove(req.params.id, function(err){
+        if(err){
+            res.redirect("/campgrounds");
+        }else{
+            res.redirect("/campgrounds");
+        }
+    });
+});
+
 //define our own middleware to check if the user is logged in (only so he/she can add new comment)
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
@@ -97,6 +109,30 @@ function isLoggedIn(req, res, next){
     }
     //else if the user is not logged in, redirect back to the login page
     res.redirect("/login");
+}
+
+function checkCampgroundOwnership(req, res, next){
+        //check if user is logged in
+    if(req.isAuthenticated()){
+        
+        Campground.findById(req.params.id, function(err,foundCampground){
+            if(err){
+                res.redirect("back");
+            }else{
+                //then check if the user owns the campground
+                //DON'T USE == or === because these two ids are of DIFFERENT TYPES!!!
+                if(foundCampground.author.id.equals(req.user._id)){
+                    next(); //move on, good to go
+                }else{
+                    res.redirect("back");
+                }
+                
+            }
+        });
+    }else{
+        res.redirect("back");  //take the user directly to the previous page 
+    }
+    
 }
 
 module.exports = router;
