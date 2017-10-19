@@ -21,8 +21,9 @@ app.use(bodyParser.urlencoded({extended:true}));
 //tell express to serve the public directory
 app.use(express.static(__dirname+"/public"));
 app.set("view engine", "ejs");
+
 //generate the seeding data
-seedDB();
+//seedDB();
 
 
 //PASSPORT CONFIGURATION
