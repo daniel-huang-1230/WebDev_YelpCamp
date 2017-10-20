@@ -72,6 +72,19 @@ router.put("/:comment_id", function(req, res){
         }
     });
 });
+
+//Comment DESTROY route
+router.delete("/:comment_id", function(req, res){
+    Comment.findByIdAndRemove(req.params.comment_id, function(err){
+        if(err){
+            res.redirect("back");
+        }else{
+            //redirect to the "Campground" show page
+            res.redirect("/campgrounds/"+req.params.id);
+        }
+    });
+});
+
 //define our own middleware to check if the user is logged in (only so he/she can add new comment)
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
