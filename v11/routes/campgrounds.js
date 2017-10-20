@@ -39,10 +39,12 @@ router.post("/", middleware.isLoggedIn, function(req, res){
     //add the newly created campground to the database
     Campground.create(newCampground, function(err, newlyCreated){
         if(err){
+            req.flash("error", "Oops, something went wrong");
             console.log(err);
         }else{
             //yes we do have two campgrounds routes, but for redirect,
             //the default route is to the GET request
+            req.flash("success", "New campground created!");
             res.redirect("/campgrounds");   
         }
     });
@@ -68,6 +70,7 @@ router.get("/:id", function(req, res){
 router.get("/:id/edit", middleware.checkCampgroundOwnership, function(req,res){
     Campground.findById(req.params.id, function(err,foundCampground){
         if(err){
+             req.flash("error", "Campground not found");
              res.redirect("/campgrounds");
         }else{
             //DON'T USE == or === because these two ids are of DIFFERENT TYPES!!!

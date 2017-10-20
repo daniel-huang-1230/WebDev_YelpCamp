@@ -25,10 +25,11 @@ router.post("/register", function(req,res){
     //"HASH" the password for us
     User.register(newUser, req.body.password, function(err,user){
         if(err){
-            console.log(err);
+            req.flash("error", err.message); //here we don't write the error message ourselves
             return res.render("register"); //short-circuit and show again the register form
         }
         passport.authenticate("local")(req,res, function(){
+            req.flash("success", "Welcome to YelpCamp "+ user.username);
             res.redirect("/campgrounds"); //log the user in
         });
     } );
@@ -52,16 +53,10 @@ router.post("/login", passport.authenticate("local",
 //lastly, logout route
 router.get("/logout", function(req,res){
     req.logout();  //this is the method that comes with the awesome passport package
+    req.flash("success", "Logged you out!");
     res.redirect("/campgrounds");
 });
 
-//define our own middleware to check if the user is logged in (only so he/she can add new comment)
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    //else if the user is not logged in, redirect back to the login page
-    res.redirect("/login");
-}
+
 
 module.exports = router;
