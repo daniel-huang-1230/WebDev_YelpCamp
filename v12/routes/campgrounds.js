@@ -5,19 +5,21 @@ var middleware  = require("../middleware");
 var router      = express.Router({mergeParams: true}); //important to mergeParams so that our findById works as expected
 
 
-//INDEX ROUTE
+
+
+//INDEX - show all campgrounds
 router.get("/", function(req, res){
-    //GET all campgrounds from the database
-    Campground.find({},function(err,allCampgrounds){
-        if(err){
-            console.log(err);
-        }else{                             //notice the currentUser part is required for every route, we didn't have to add it mamually since we 
-                                            // have handled on the top --i.e. app.use(function(req,res,next))  req.locals......
-            res.render("campgrounds/index", {campgrounds:allCampgrounds, currentUser:req.user});
-        }
+    // Get all campgrounds from the database
+    Campground.find({}, function(err, allCampgrounds){
+       if(err){
+           console.log(err);
+       } else {
+          res.render("campgrounds/index",{campgrounds: allCampgrounds, page: 'campgrounds'});
+       }
     });
-  
-}); 
+});
+
+
 
 //NEW ROUTE
 router.get("/new", middleware.isLoggedIn, function(req,res){

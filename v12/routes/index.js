@@ -12,9 +12,9 @@ router.get("/", function(req,res){
 
 //AUTH ROUTES
 
-//show the Register form
-router.get("/register", function(req,res){
-    res.render("register");
+// show register form
+router.get("/register", function(req, res){
+   res.render("register", {page: 'register'}); 
 });
 
 //handle sign up logic
@@ -26,7 +26,7 @@ router.post("/register", function(req,res){
     User.register(newUser, req.body.password, function(err,user){
         if(err){
             req.flash("error", err.message); //here we don't write the error message ourselves
-            return res.render("register"); //short-circuit and show again the register form
+            return res.redirect("/register"); //short-circuit and show again the register form
         }
         passport.authenticate("local")(req,res, function(){
             req.flash("success", "Welcome to YelpCamp "+ user.username);
@@ -36,8 +36,8 @@ router.post("/register", function(req,res){
 });
 
 //show login form
-router.get("/login", function(req,res){
-    res.render("login");
+router.get("/login", function(req, res){
+   res.render("login", {page: 'login'}); 
 });
 
 //handle login logic
