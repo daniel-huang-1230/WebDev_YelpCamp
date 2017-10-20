@@ -48,6 +48,30 @@ router.post("/", isLoggedIn, function(req, res){
     });
 });
 
+//Comment EDIT route
+router.get("/:comment_id/edit", function(req, res){
+    Comment.findById(req.params.comment_id, function(err, foundComment){
+        if(err){
+            res.redirect("back");
+        }else{
+            res.render("comments/edit", {campground_id: req.params.id, comment:foundComment});  
+            //notice here the params.id is the "campground's id", remember how we set up the router
+        }
+    });
+    
+});
+
+//Comment UPDATE route
+router.put("/:comment_id", function(req, res){
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment){
+        if(err){
+            res.redirect("back");
+        }else{
+            //successfully updated, send the user back to the comment show page
+            res.redirect("/campgrounds/"+req.params.id);
+        }
+    });
+});
 //define our own middleware to check if the user is logged in (only so he/she can add new comment)
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){

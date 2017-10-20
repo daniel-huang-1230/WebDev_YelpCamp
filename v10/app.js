@@ -49,8 +49,8 @@ app.use(function(req,res,next){
 });
 
 
-app.use("/campgrounds/:id/comments", commentRoutes); //append "/campgrounds/:id/comments" to all routes in commentsRoute file
-app.use("/campgrounds", campgroundRoutes);           //append "/campgrounds" to all routes in campgroundRoutes file
+app.use("/campgrounds/:id/comments", commentRoutes); //prepend "/campgrounds/:id/comments" to all routes in commentsRoute file
+app.use("/campgrounds", campgroundRoutes);           //prepend "/campgrounds" to all routes in campgroundRoutes file
 app.use("/", indexRoutes);   
 
 app.listen(process.env.PORT, process.env.IP, function(){
