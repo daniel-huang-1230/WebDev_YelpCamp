@@ -1,6 +1,6 @@
 # Project Overview
  YelpCamp is a extensive project I worked on following the intructions from Udemy course **[Web Developer Bootcamp](https://www.udemy.com/the-web-developer-bootcamp/learn/v4/overview)**, taught by
- Colt Steele. In my current deployed version, I also added quite a few features beyond the part coded in class, including but 
+ Colt Steele. In my current deployed version, I also added quite a few features beyond what was coded in class, including but 
  not limited to **Google Map API**, UI enhancements on Login, Sign Up, and the landing page, dynamic pricing feature, etc. 
  
  
